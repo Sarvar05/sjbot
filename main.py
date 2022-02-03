@@ -139,14 +139,13 @@ def home(update, context):
     print('home')
     try:
         db = DBHelper()
-        query = update.callback_query
-        if query is not None:
-            telegram_id = query.message.chat.id
+        if update.message is not None and update.message.text is not None and update.message.text == '/start':
+            telegram_id = update.message.chat.id
             user = db.get('users', telegram_id)
 
             if user:
                 if user.get('full_name') is not None:
-                    query.message.reply_html(
+                    update.message.reply_html(
                         GREETING_TEXT.format(user['full_name']),
                         reply_markup=InlineKeyboardMarkup(main_buttons(user['is_author']))
                     )
@@ -154,7 +153,7 @@ def home(update, context):
             else:
                 db.insert('users', {'id': telegram_id})
 
-            query.message.reply_html(
+            update.message.reply_html(
                 ASK_NAME
             )
             return STATE_ASK_NAME
