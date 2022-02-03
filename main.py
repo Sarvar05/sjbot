@@ -525,21 +525,22 @@ def generate_report(context: CallbackContext):
 
     text = ''
 
-    for i in range(0, len(results)):
-        text = text + "\n" + str(i + 1) + ". " + str(results[i]['full_name']) + "\t" + str(results[i]['correct_answers_count']) + "\t" + str(round(results[i]['test_time'] / 60)) + ' daqiqa ' + str(round(results[i]['test_time'] % 60)) + ' soniya'
+    if results:
+        for i in range(0, len(results)):
+            text = text + "\n" + str(i + 1) + ". " + str(results[i]['full_name']) + "\t" + str(results[i]['correct_answers_count']) + "\t" + str(round(results[i]['test_time'] / 60)) + ' daqiqa ' + str(round(results[i]['test_time'] % 60)) + ' soniya'
 
-    context.bot.send_message(
-        chat_id=test['author_id'],
-        parse_mode='html',
-        text=TOTAL_TEST_RESULTS_TEXT.format(
-            test['name'],
-            test['count_tests'],
-            len(results),
-            test['test_time'],
-            test['id'],
-            text,
+        context.bot.send_message(
+            chat_id=test['author_id'],
+            parse_mode='html',
+            text=TOTAL_TEST_RESULTS_TEXT.format(
+                test['name'],
+                test['count_tests'],
+                len(results),
+                test['test_time'],
+                test['id'],
+                text,
+            )
         )
-    )
 
 
 def main():
