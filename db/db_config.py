@@ -1,7 +1,7 @@
-DB_HOSTNAME = ''
-DB_USERNAME = ''
-DB_PASSWORD = ''
-DB_NAME = ''
+DB_HOSTNAME = 'localhost'
+DB_USERNAME = 'sarvar'
+DB_PASSWORD = 'Sarvar@akbarov05'
+DB_NAME = 'sjbot'
 
 config_db = {
     'host': DB_HOSTNAME,

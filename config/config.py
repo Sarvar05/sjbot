@@ -1,4 +1,4 @@
-TOKEN = ''
+TOKEN = '5182163593:AAH-IGm21twRRfXlpZZQcqUC1dKPbC8KRWw'
 
 ADMIN = '@akbarov_dev'
 

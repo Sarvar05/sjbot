@@ -1,11 +1,10 @@
 # base requirements
+import re
 import time
 import traceback
-import re
 from datetime import datetime
+
 import pytz
-
-
 # telegram methods
 from telegram import (
     InlineKeyboardButton,
@@ -13,7 +12,6 @@ from telegram import (
     InlineQueryResultArticle,
     InputTextMessageContent
 )
-
 from telegram.ext import (
     CallbackContext,
     Updater,
@@ -25,7 +23,6 @@ from telegram.ext import (
     Filters,
     CallbackQueryHandler
 )
-
 from telegram.utils import helpers
 
 # configuration
@@ -132,31 +129,6 @@ def start(update, context):
             )
             return STATE_ASK_NAME
 
-    except Exception as e:
-        print(traceback.format_exc())
-
-def home(update, context):
-    print('home')
-    try:
-        db = DBHelper()
-        if update.message is not None and update.message.text is not None and update.message.text == '/start':
-            telegram_id = update.message.chat.id
-            user = db.get('users', telegram_id)
-
-            if user:
-                if user.get('full_name') is not None:
-                    update.message.reply_html(
-                        GREETING_TEXT.format(user['full_name']),
-                        reply_markup=InlineKeyboardMarkup(main_buttons(user['is_author']))
-                    )
-                    return STATE_MAIN
-            else:
-                db.insert('users', {'id': telegram_id})
-
-            update.message.reply_html(
-                ASK_NAME
-            )
-            return STATE_ASK_NAME
     except Exception as e:
         print(traceback.format_exc())
 
@@ -300,7 +272,7 @@ def create_test(update, context):
                 update.message.reply_html('Ko\'rsatilgan ko\'rinishda kiriting.')
                 update.message.reply_html(
                     TEST_CREATE_TEXT,
-                    reply_markup=InlineKeyboardMarkup
+                    reply_markup=InlineKeyboardMarkup(home_button())
                 )
         else:
             update.message.delete()
@@ -368,12 +340,13 @@ def check_test(update, context):
                             if test_answers[i] == test['answers'][i]:
                                 count = count + 1
 
+                        test_time = int(time.time()) - int(test['created_at'])
                         result_id = db.insert('results', {
                             'test_id': int(test_id),
                             'user_id': int(telegram_id),
                             'result_str': test['answers'] + '|' + test_answers,
                             'correct_answers_count': count,
-                            'test_time': int(time.time()) - int(test['created_at'])
+                            'test_time': test_time
                         })
 
                         if result_id:
@@ -381,14 +354,14 @@ def check_test(update, context):
                                 chat_id=test['author_id'],
                                 parse_mode='html',
                                 text=TEST_RESULT_TEXT.format(
-                                    result['test_name'],
-                                    result['count_tests'],
-                                    str(round(result['test_time'] / 60)) + ' daqiqa ' + str(
-                                        round(result['test_time'] % 60)) + ' soniya',
-                                    result['test_id'],
-                                    result['full_name'],
+                                    test['name'],
+                                    test['count_tests'],
+                                    str(round(test_time / 60)) + ' daqiqa ' + str(
+                                        round(test_time % 60)) + ' soniya',
+                                    test_id,
+                                    user['full_name'],
                                     generate_user_result(test_answers, test['answers']),
-                                    result['correct_answers_count']
+                                    count
                                 )
                             )
 
@@ -626,7 +599,7 @@ def main():
 
     updater = Updater(TOKEN, use_context=True)
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler("start", home, Filters.regex('check-test')))
+
     dispatcher.add_handler(conversation_handler)
 
     dispatcher.add_handler(InlineQueryHandler(inlinequery))
