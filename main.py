@@ -135,6 +135,32 @@ def start(update, context):
     except Exception as e:
         print(traceback.format_exc())
 
+def home(update, context):
+    print('home')
+    try:
+        db = DBHelper()
+        query = update.callback_query
+        if query is not None:
+            telegram_id = query.message.chat.id
+            user = db.get('users', telegram_id)
+
+            if user:
+                if user.get('full_name') is not None:
+                    query.message.reply_html(
+                        GREETING_TEXT.format(user['full_name']),
+                        reply_markup=InlineKeyboardMarkup(main_buttons(user['is_author']))
+                    )
+                    return STATE_MAIN
+            else:
+                db.insert('users', {'id': telegram_id})
+
+            query.message.reply_html(
+                ASK_NAME
+            )
+            return STATE_ASK_NAME
+    except Exception as e:
+        print(traceback.format_exc())
+
 
 def ask_name(update, context):
     print('ask_name')
@@ -352,6 +378,21 @@ def check_test(update, context):
                         })
 
                         if result_id:
+                            context.bot.send_message(
+                                chat_id=test['author_id'],
+                                parse_mode='html',
+                                text=TEST_RESULT_TEXT.format(
+                                    result['test_name'],
+                                    result['count_tests'],
+                                    str(round(result['test_time'] / 60)) + ' daqiqa ' + str(
+                                        round(result['test_time'] % 60)) + ' soniya',
+                                    result['test_id'],
+                                    result['full_name'],
+                                    generate_user_result(test_answers, test['answers']),
+                                    result['correct_answers_count']
+                                )
+                            )
+
                             at_time = test['created_at'] + test['test_time'] * 60
 
                             utc_moment_naive = datetime.utcfromtimestamp(at_time)
@@ -483,22 +524,28 @@ def catch_query(update, context):
         print(traceback.format_exc())
 
 
+def generate_user_result(user_answers, correct_answers):
+    text = ''
+    for i in range(0, len(user_answers)):
+        if user_answers[i] == correct_answers[i]:
+            text = text + "\n" + str(i + 1) + ".  " + user_answers[i] + "  ✅"
+        else:
+            text = text + "\n" + str(i + 1) + ".  " + user_answers[i] + "  ❓"
+
+    return text
+
+
 def send_results(context: CallbackContext):
     db = DBHelper()
     result = db.get_result(context.job.context)
 
     if result:
-        text = ''
         answers = result['result_str'].split('|')
 
         correct_answers = answers[0]
         user_answers = answers[1]
 
-        for i in range(0, len(user_answers)):
-            if user_answers[i] == correct_answers[i]:
-                text = text + "\n" + str(i + 1) + ".  " + user_answers[i] + "  ✅"
-            else:
-                text = text + "\n" + str(i + 1) + ".  " + user_answers[i] + "  ❓"
+        text = generate_user_result(user_answers, correct_answers)
 
         context.bot.send_message(
             chat_id=result['user_id'],
@@ -580,7 +627,7 @@ def main():
 
     updater = Updater(TOKEN, use_context=True)
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler("start", start, Filters.regex('check-test')))
+    dispatcher.add_handler(CommandHandler("start", home, Filters.regex('check-test')))
     dispatcher.add_handler(conversation_handler)
 
     dispatcher.add_handler(InlineQueryHandler(inlinequery))
