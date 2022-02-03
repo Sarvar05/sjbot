@@ -375,7 +375,7 @@ def check_test(update, context):
                 update.message.reply_html('Ko\'rsatilgan ko\'rinishda kiriting.')
                 update.message.reply_html(
                     CHECK_TEST_TEXT,
-                    reply_markup=InlineKeyboardMarkup
+                    reply_markup=InlineKeyboardMarkup(home_button()),
                 )
         else:
             update.message.delete()
