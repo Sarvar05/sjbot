@@ -217,7 +217,7 @@ def create_test(update, context):
                 user = db.get('users', telegram_id)
 
                 query.message.edit_text(
-                    GREETING_TEXT,
+                    GREETING_TEXT.format(user['full_name']),
                     reply_markup=InlineKeyboardMarkup(main_buttons(user['is_author'])),
                     parse_mode='html'
                 )
@@ -295,7 +295,7 @@ def check_test(update, context):
                 telegram_id = query.message.chat.id
                 user = db.get('users', telegram_id)
                 query.message.edit_text(
-                    GREETING_TEXT,
+                    GREETING_TEXT.format(user['full_name']),
                     reply_markup=InlineKeyboardMarkup(main_buttons(user['is_author'])),
                     parse_mode='html'
                 )
