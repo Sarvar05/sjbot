@@ -1,4 +1,4 @@
-TOKEN = '5182163593:AAH-IGm21twRRfXlpZZQcqUC1dKPbC8KRWw'
+TOKEN = ''
 
 ADMIN = '@akbarov_dev'
 
@@ -13,16 +13,15 @@ ASK_NAME = 'Iltimos ism familiyangizni kiriting'
 
 GREETING_TEXT = '''Assalomu alaykum <b>{}</b>, Xush kelibsiz!
 Bu bot online testlar uchun
-yaratilgan.
-
-🖊️ Ismingizni uzgartirish uchun
-/edit ni bosing.'''
+yaratilgan.'''
 
 TEST_CREATE_TEXT = '''<b>Yaratish uchun</b>:
 
-misol: <i>fan_nomi*savollar_soni*ajratilganvaqti(minutda)*javob_lar</i>
+misol: 
+<i>fan_nomi*savollar_soni*ajratilganvaqti(minutda)*javob_lar</i>
 
-namuna: Matematika*10*20*abacdcbac....
+namuna: 
+<i>Matematika*10*20*abacdcbac....</i>
 
 Shu koʻrinishda yozing.'''
 
@@ -30,7 +29,7 @@ CHECK_TEST_TEXT = '''<b>Javoblarni tekshirish uchun</b>:
 
 misol: <i>test_kodi*javoblar</i>
 
-namuna: 1234*abcabadacb...
+namuna: <i>1234*abcabadacb...</i>
 
 Shu koʻrinishda yoʻboring.'''
 
