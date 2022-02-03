@@ -170,7 +170,7 @@ def ask_name(update, context):
 
             full_name = " ".join(update.message.text.strip().split())
 
-            if bool(re.fullmatch('(([A-Za-z]{3,25}[ ])+)', full_name)):
+            if bool(re.fullmatch('[A-Za-z]{3,25}[ ][A-Za-z]{3,25}([ ][A-Za-z]{3,25})?', full_name)):
                 telegram_id = update.message.chat.id
                 db.update('users', telegram_id, {'full_name': full_name})
                 user = db.get('users', telegram_id)
